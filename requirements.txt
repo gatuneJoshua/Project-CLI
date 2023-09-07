@@ -1,5 +1,0 @@
-click
-colorama
-tabulate
-prompt-toolkit
-requests
