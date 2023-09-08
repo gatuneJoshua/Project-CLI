@@ -14,6 +14,3 @@ requests = "*"
 
 [requires]
 python_version = "3.10"
-
-after pasting this kwa pipfile yako, I want you to run the following command kwa terminal
-pipenv install
