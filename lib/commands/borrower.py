@@ -2,6 +2,21 @@ import click
 from lib.database import SessionLocal
 from lib.models.borrower import Borrower
 
+# Create a decorator function to handle database sessions
+def with_session(func):
+    def wrapper(*args, **kwargs):
+        session = SessionLocal()
+        try:
+            result = func(session, *args, **kwargs)
+            session.commit()
+            return result
+        except Exception as e:
+            session.rollback()
+            raise e
+        finally:
+            session.close()
+    return wrapper
+
 @click.group()
 def borrower():
     """Manage borrowers."""
@@ -9,44 +24,38 @@ def borrower():
 
 @borrower.command()
 @click.argument('name')
-
-def add(name):
+@with_session
+def add(session, name):
     """Add a new borrower."""
-    session = SessionLocal()
-    borrower = Borrower(name=name,)
+    borrower = Borrower(name=name)
     session.add(borrower)
-    session.commit()
-    session.close()
     click.echo(f'Borrower "{name}" added successfully!')
 
 @borrower.command()
-def list():
+@with_session
+def list(session):
     """List all borrowers."""
-    session = SessionLocal()
     borrowers = session.query(Borrower).all()
-    session.close()
 
     if not borrowers:
         click.echo('No borrowers found.')
     else:
         click.echo('Borrowers:')
         for borrower in borrowers:
-            click.echo(f'- ID: {borrower.id}, Name: {borrower.name},')
+            click.echo(f'- ID: {borrower.id}, Name: {borrower.name}')
 
 @borrower.command()
 @click.argument('borrower_id', type=int)
-def view(borrower_id):
+@with_session
+def view(session, borrower_id):
     """View borrower details."""
-    session = SessionLocal()
     borrower = session.query(Borrower).filter(Borrower.id == borrower_id).first()
-    session.close()
 
     if not borrower:
         click.echo(f'Borrower with ID {borrower_id} not found.')
     else:
         click.echo(f'Borrower ID: {borrower.id}')
         click.echo(f'Name: {borrower.name}')
-        
 
 if __name__ == '__main__':
     borrower()

@@ -2,6 +2,21 @@ import click
 from lib.database import SessionLocal
 from lib.models.book import Book
 
+# Create a decorator function to handle database sessions
+def with_session(func):
+    def wrapper(*args, **kwargs):
+        session = SessionLocal()
+        try:
+            result = func(session, *args, **kwargs)
+            session.commit()
+            return result
+        except Exception as e:
+            session.rollback()
+            raise e
+        finally:
+            session.close()
+    return wrapper
+
 @click.group()
 def book():
     """Manage books."""
@@ -10,21 +25,18 @@ def book():
 @book.command()
 @click.argument('title')
 @click.argument('author_id', type=int)
-def add(title, author_id):
+@with_session
+def add(session, title, author_id):
     """Add new book."""
-    session = SessionLocal()
     book = Book(title=title, author_id=author_id)
     session.add(book)
-    session.commit()
-    session.close()
     click.echo(f'Book "{title}" added successfully!')
 
 @book.command()
-def list():
+@with_session
+def list(session):
     """List all books."""
-    session = SessionLocal()
     books = session.query(Book).all()
-    session.close()
 
     if not books:
         click.echo('No books found.')
@@ -35,11 +47,10 @@ def list():
 
 @book.command()
 @click.argument('book_id', type=int)
-def view(book_id):
+@with_session
+def view(session, book_id):
     """View book details."""
-    session = SessionLocal()
     book = session.query(Book).filter(Book.id == book_id).first()
-    session.close()
 
     if not book:
         click.echo(f'Book with ID {book_id} not found.')

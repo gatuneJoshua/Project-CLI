@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from lib.models.base import Base
+from lib.database import Base
 
 class Checkout(Base):
     __tablename__ = 'checkouts'
@@ -9,7 +9,7 @@ class Checkout(Base):
     book_id = Column(Integer, ForeignKey('books.id'), nullable=False)
     borrower_id = Column(Integer, ForeignKey('borrowers.id'), nullable=False)
     checkout_date = Column(DateTime, nullable=False)
-    return_date = Column(DateTime, nullable=True)  # Add a field for the return date
+    return_date = Column(DateTime, nullable=True)
 
     # Define relationships with the Book and Borrower models
     book = relationship('Book', back_populates='checkouts')
@@ -20,7 +20,11 @@ class Checkout(Base):
         self.borrower = borrower
         self.checkout_date = checkout_date
 
-    # Add additional methods as needed
     def mark_as_returned(self, return_date):
-        # Mark the checkout record as returned and set the return date
+        if return_date < self.checkout_date:
+            raise ValueError("Return date cannot be earlier than the checkout date.")
+        
         self.return_date = return_date
+
+        # Optionally, update the book's status when returned
+        self.book.borrowed = False
