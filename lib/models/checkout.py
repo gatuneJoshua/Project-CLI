@@ -13,7 +13,6 @@ class Checkout(Base):
 
     # Define relationships with the Book and Borrower models
     book = relationship('Book', back_populates='checkouts')
-    borrower = relationship('Borrower', back_populates='checkouts')
 
     def __init__(self, book, borrower, checkout_date):
         self.book = book

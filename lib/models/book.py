@@ -9,9 +9,10 @@ class Book(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
     author_id = Column(Integer, ForeignKey('authors.id'), nullable=False)
-
+    
     # Define a relationship with the Author model
     author = relationship('Author', back_populates='books')
+    checkouts = relationship('Checkout', back_populates='book')
 
     def __init__(self, title, author):
         self.title = title
@@ -30,3 +31,4 @@ class Book(Base):
         ).first()
 
         return not checkout  # True if the book is not checked out
+    
