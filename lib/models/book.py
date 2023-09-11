@@ -12,7 +12,7 @@ class Book(Base):
     
     # Define a relationship with the Author model
     author = relationship('Author', back_populates='books')
-    checkouts = relationship('Checkout', back_populates='book')
+   
 
     def __init__(self, title, author_id):
         self.title = title
