@@ -14,9 +14,9 @@ class Book(Base):
     author = relationship('Author', back_populates='books')
     checkouts = relationship('Checkout', back_populates='book')
 
-    def __init__(self, title, author):
+    def __init__(self, title, author_id):
         self.title = title
-        self.author = author
+        self.author_id = author_id
         
 
     def __str__(self):

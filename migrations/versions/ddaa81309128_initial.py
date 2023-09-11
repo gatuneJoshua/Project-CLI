@@ -21,7 +21,7 @@ def upgrade():
         'authors',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(length=255), nullable=False),
-        sa.Column('birthdate', sa.String(length=255), nullable=False),
+        sa.Column('birthdate', sa.String(length=255), nullable=True),
         sa.PrimaryKeyConstraint('id'),
     )
 

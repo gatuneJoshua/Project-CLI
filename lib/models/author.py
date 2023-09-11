@@ -7,7 +7,7 @@ class Author(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
-    birthdate = Column(Date)
+    birthdate = Column(String)
 
     # Define a relationship with the Book model
     books = relationship('Book', back_populates='author')

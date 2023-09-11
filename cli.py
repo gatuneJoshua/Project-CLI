@@ -11,13 +11,14 @@ def library_cli():
 # Command to add a new author
 @library_cli.command()
 @click.argument('name')
-def add_author(name):
+@click.argument('birthdate')
+def add_author(name, birthdate):
     """Add a new author."""
     session = SessionLocal()
-    author = Author(name=name)
+    author = Author(name=name, birthdate=birthdate)
     session.add(author)
     session.commit()
-    session.close()
+   # session.close()
     click.echo(f'Author "{name}" added successfully!')
 
 # Command to update an author's name
@@ -81,17 +82,19 @@ def add_book(title, author_id):
     """Add a new book."""
     session = SessionLocal()
     author = session.query(Author).filter_by(id=author_id).first()
-
-    if not author:
-        session.close()
-        click.echo(f'Author with ID {author_id} not found.')
-        return
+  #  print(author.name)
+    # session.merge(author)  # Reattach the author to the current session
+    # if not author:
+    #     session.close()
+    #     click.echo(f'Author with ID {author_id} not found.')
+    #     return
 
     book = Book(title=title, author_id=author_id)
+    click.echo(f'Book "{title}" by {author.name} added successfully!') 
     session.add(book)
     session.commit()
     session.close()
-    click.echo(f'Book "{title}" by {author.name} added successfully!')
+   
 
 # Command to list all books
 @library_cli.command()
