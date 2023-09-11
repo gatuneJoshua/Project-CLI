@@ -44,20 +44,18 @@ def update_author(author_id, new_name):
 @library_cli.command()
 @click.argument('author_id', type=int)
 def delete_author(author_id):
-    """Delete an author."""
+    """Delete an author and associated books."""
     session = SessionLocal()
-    author = session.query(Author).filter_by(id=author_id).first()
+    author = session.query(Author).get(author_id)
 
-    if not author:
-        session.close()
-        click.echo(f'Author with ID {author_id} not found.')
-        return
+    if author:
+        session.delete(author)
+        session.commit()
+        click.echo(f'Author with ID {author_id} and associated books deleted successfully.')
+    else:
+        click.echo(f'Author with ID {author_id} not found in the database.')
 
-    session.delete(author)
-    session.commit()
     session.close()
-    click.echo(f'Author with ID {author_id} deleted successfully!')
-
 
 # Command to list all authors
 @library_cli.command()

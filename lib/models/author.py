@@ -10,7 +10,7 @@ class Author(Base):
     birthdate = Column(String)
 
     # Define a relationship with the Book model
-    books = relationship('Book', back_populates='author')
+    books = relationship('Book', back_populates='author', cascade="all, delete-orphan")
 
     def __init__(self, name, birthdate=None):
         if len(name) > 255:
